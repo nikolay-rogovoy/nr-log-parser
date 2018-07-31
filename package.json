@@ -1,0 +1,59 @@
+{
+    "name": "mocha-typescript-seed",
+    "version": "0.0.1",
+    "description": "A project with mocha-typescript enabled",
+    "main": "index.js",
+    "scripts": {
+        "build": "node tools/pre-build.js && npm run prepare && node tools/copy.js",
+        "publish": "cd ./dist && npm publish",
+        "pretest": "tsc",
+        "test": "nyc mocha",
+        "watch": "mocha-typescript-watch",
+        "prepare": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pana-cc/mocha-typescript-seed.git"
+    },
+    "author": "",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/pana-cc/mocha-typescript-seed/issues"
+    },
+    "homepage": "https://github.com/pana-cc/mocha-typescript-seed#readme",
+    "devDependencies": {
+        "@types/chai": "*",
+        "@types/mocha": "*",
+        "chai": "*",
+        "mocha": "*",
+        "mocha-typescript": "*",
+        "nyc": "*",
+        "source-map-support": "*",
+        "ts-node": "^3.3.0",
+        "typescript": "*",
+        "rimraf": "^2.6.2"
+    },
+    "nyc": {
+        "check-coverage": true,
+        "lines": 80,
+        "statements": 80,
+        "functions": 80,
+        "branches": 80,
+        "include": [
+            "src/**/*.js"
+        ],
+        "exclude": [
+            "test/**/*.js"
+        ],
+        "reporter": [
+            "lcov",
+            "text-summary"
+        ],
+        "all": true
+    },
+    "dependencies": {
+        "@types/node": "^10.5.4",
+        "pg": "^7.4.3",
+        "rxjs": "^5.5.1"
+    }
+}
