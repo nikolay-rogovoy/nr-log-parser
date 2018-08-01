@@ -1,9 +1,12 @@
 /***/
 import {IFactattrib} from "./i-factattrib";
+import {IFact} from "./i-fact";
 
 export interface IFactattribtype {
     /***/
     name: string;
     /***/
-    check: (line: string) => IFactattrib;
+    date: Date;
+    /***/
+    check: (line: string, fact: IFact) => IFactattrib;
 }

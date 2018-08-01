@@ -1,12 +1,14 @@
 import {IStorage} from "./i-storage";
-import * as fs from "fs";
 import * as readline from "readline";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {filter, map} from "rxjs/operators";
+import {concatMap, filter, finalize, map, mapTo, mergeMap, reduce, switchMap} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {IFacttype} from "./i-facttype";
 import {IFact} from "./i-fact";
 import {IFactattribtype} from "./i-factattribtype";
+import {forkJoin} from "rxjs/observable/forkJoin";
+import {of} from "rxjs/observable/of";
+import {from} from "rxjs/observable/from";
 
 /***/
 export class LogParser {
@@ -16,7 +18,7 @@ export class LogParser {
 
     /***/
     constructor(public facttypes: IFacttype[],
-                public fileName: string,
+                public inStream: NodeJS.ReadableStream,
                 public storages: IStorage[]) {
     }
 
@@ -24,25 +26,58 @@ export class LogParser {
     parse(): Observable<any> {
         return this.getLineReader()
             .pipe(
-                map((line) => {
-                    for (let facttype of this.facttypes) {
-                        this.checkNewFact(facttype, line);
-                        this.checkActiveFacts(facttype, line);
-                    }
-                    return true;
+                mergeMap((line) => {
+                    return from(this.facttypes)
+                        .pipe(
+                            mergeMap((facttype) => {
+                                this.checkNewFact(facttype, line);
+                                return this.checkActiveFacts(facttype, line)
+                                    .pipe(mapTo(facttype));
+                            }),
+                            reduce((acc, val: IFacttype) => {
+                                if (val) {
+                                    acc.push(val);
+                                }
+                                return acc;
+                            }, []),
+                            mapTo(line),
+                        );
+                }),
+                finalize(() => {
+                    this.saveIncompleteFacts().subscribe();
                 })
             );
     }
 
     /***/
-    checkActiveFacts(facttype: IFacttype, line: string) {
-        for (let fact of this.activeFacts) {
-            this.checkAttribs(facttype, fact, line);
-            let endFact = facttype.checkEnd(line);
-            if (endFact) {
-                this.compliteFact(fact, endFact);
-            }
-        }
+    saveIncompleteFacts() {
+        return forkJoin(...this.activeFacts.map(fact => this.saveFactInStoreges(fact)))
+    }
+
+    /***/
+    checkActiveFacts(facttype: IFacttype, line: string): Observable<IFact[]> {
+        return from(this.activeFacts.slice())
+            .pipe(
+                map((fact) => {
+                    this.checkAttribs(facttype, fact, line);
+                    return fact;
+                }),
+                switchMap((fact: IFact) => {
+                    let endFact = facttype.checkEnd(line, fact);
+                    if (endFact) {
+                        return this.compliteFact(fact, endFact)
+                            .pipe(mapTo(fact));
+                    } else {
+                        return of(null);
+                    }
+                }),
+                reduce((acc, val: IFact) => {
+                    if (val) {
+                        acc.push(val);
+                    }
+                    return acc;
+                }, [])
+            );
     }
 
     /***/
@@ -54,7 +89,7 @@ export class LogParser {
 
     /***/
     checkAttrib(factattribtype: IFactattribtype, fact: IFact, line: string) {
-        let attrib = factattribtype.check(line);
+        let attrib = factattribtype.check(line, fact);
         if (attrib) {
             fact.factattrib.push(attrib);
         }
@@ -69,17 +104,20 @@ export class LogParser {
     }
 
     /***/
-    compliteFact(fact: IFact, endFact: Date) {
+    compliteFact(fact: IFact, endFact: Date): Observable<any> {
         fact.end = endFact;
-        this.saveFactInStoreges(fact);
-        this.removeComplitedFact(fact);
+        return this.saveFactInStoreges(fact).pipe(
+            map((resultSave) => {
+                this.removeComplitedFact(fact);
+                return resultSave;
+            })
+        );
+
     }
 
     /***/
-    saveFactInStoreges(fact: IFact) {
-        for (let storage of this.storages) {
-            storage.write(fact);
-        }
+    saveFactInStoreges(fact: IFact): Observable<any> {
+        return forkJoin(...this.storages.map(storage => storage.write(fact)));
     }
 
     /***/
@@ -93,10 +131,13 @@ export class LogParser {
     getLineReader(): Observable<string> {
         let bs = new BehaviorSubject(null);
         let lineReader = readline.createInterface({
-            input: fs.createReadStream(this.fileName)
+            input: this.inStream
         });
         lineReader.on('line', (input: any) => {
             bs.next(input);
+        });
+        lineReader.on('close', (input: any) => {
+            bs.complete();
         });
         return bs.pipe(filter(x => x != null));
     }

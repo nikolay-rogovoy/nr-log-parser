@@ -1,9 +1,7 @@
-import {IFactattribtype} from "./i-factattribtype";
-
 /***/
 export interface IFactattrib {
     /***/
-    factattribtype: IFactattribtype,
+    name: string,
     /***/
     value: any;
 }

@@ -8,7 +8,7 @@ export interface IFacttype {
     /***/
     check: (line: string) => IFact,
     /***/
-    checkEnd: (line: string) => Date,
+    checkEnd: (line: string, fact: IFact) => Date,
     /***/
     factattribtypes: IFactattribtype[]
 }

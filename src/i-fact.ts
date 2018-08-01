@@ -8,7 +8,7 @@ export interface IFact {
     /***/
     end: Date;
     /***/
-    facttype: IFacttype,
+    name: string,
     /***/
     factattrib: IFactattrib[]
 }

@@ -7,7 +7,8 @@
         "build": "node tools/pre-build.js && npm run prepare && node tools/copy.js",
         "publish": "cd ./dist && npm publish",
         "pretest": "tsc",
-        "test": "nyc mocha",
+        "test": "nyc mocha dist/test",
+        "test-debug": "nyc mocha --inspect-brk dist/test",
         "watch": "mocha-typescript-watch",
         "prepare": "tsc"
     },
@@ -40,7 +41,7 @@
         "functions": 80,
         "branches": 80,
         "include": [
-            "src/**/*.js"
+            "dist/**/*.js"
         ],
         "exclude": [
             "test/**/*.js"
