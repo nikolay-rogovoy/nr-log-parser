@@ -1,13 +1,13 @@
 // Reference mocha-typescript's global definitions:
-/// <reference path="../node_modules/mocha-typescript/globals.d.ts" />
+/// <reference path="../../node_modules/mocha-typescript/globals.d.ts" />
 
-import {ConsoleStorage, IFactattribtype, LogParser} from '../src/index';
+import {ConsoleStorage, IFactattribtype, LogParser} from '../index';
 import {assert} from 'chai';
-import {IFacttype} from "../src/i-facttype";
+import {IFacttype} from "../i-facttype";
 import {Readable} from "stream";
 import {suite, test, timeout} from "mocha-typescript";
-import {IFact} from "../src/i-fact";
-import {IFactattrib} from "../src/i-factattrib";
+import {IFact} from "../i-fact";
+import {IFactattrib} from "../i-factattrib";
 
 @suite(timeout(2000))
 class UnitTest extends LogParser {

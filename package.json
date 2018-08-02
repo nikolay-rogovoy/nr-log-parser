@@ -1,6 +1,6 @@
 {
     "name": "nr-log-parser",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "nr-log-parser",
     "main": "index.js",
     "scripts": {
