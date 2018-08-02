@@ -1,7 +1,7 @@
 {
-    "name": "mocha-typescript-seed",
+    "name": "nr-log-parser",
     "version": "0.0.1",
-    "description": "A project with mocha-typescript enabled",
+    "description": "nr-log-parser",
     "main": "index.js",
     "scripts": {
         "build": "node tools/pre-build.js && npm run prepare && node tools/copy.js",
@@ -14,24 +14,24 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/pana-cc/mocha-typescript-seed.git"
+        "url": "git+https://github.com/nikolay-rogovoy/nr-log-parser.git"
     },
     "author": "",
-    "license": "Apache-2.0",
+    "license": "ISC",
     "bugs": {
-        "url": "https://github.com/pana-cc/mocha-typescript-seed/issues"
+        "url": "https://github.com/nikolay-rogovoy/nr-log-parser/issues"
     },
-    "homepage": "https://github.com/pana-cc/mocha-typescript-seed#readme",
+    "homepage": "https://github.com/nikolay-rogovoy/nr-log-parser#readme",
     "devDependencies": {
-        "@types/chai": "*",
-        "@types/mocha": "*",
-        "chai": "*",
-        "mocha": "*",
-        "mocha-typescript": "*",
-        "nyc": "*",
-        "source-map-support": "*",
+        "@types/chai": "4.1.4",
+        "@types/mocha": "^5.2.5",
+        "chai": "^4.1.2",
+        "mocha": "^5.2.0",
+        "mocha-typescript": "^1.1.17",
+        "nyc": "^12.0.0",
+        "source-map-support": "^0.5.6",
         "ts-node": "^3.3.0",
-        "typescript": "*",
+        "typescript": "^3.0.1",
         "rimraf": "^2.6.2"
     },
     "nyc": {
