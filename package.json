@@ -1,6 +1,6 @@
 {
     "name": "nr-log-parser",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "nr-log-parser",
     "main": "index.js",
     "scripts": {
@@ -54,7 +54,6 @@
     },
     "dependencies": {
         "@types/node": "^10.5.4",
-        "pg": "^7.4.3",
         "rxjs": "^5.5.1"
     }
 }
