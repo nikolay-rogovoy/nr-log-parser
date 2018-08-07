@@ -95,9 +95,9 @@ class UnitTest extends LogParser {
         let stream = new Readable();
         stream.push(testData);
         stream.push(null);
-        let logParser = new LogParser(facttypes, stream, [new ConsoleStorage()]);
+        let logParser = new LogParser(facttypes, [new ConsoleStorage()]);
 
-        logParser.parse()
+        logParser.parse(stream)
             .subscribe(
                 (line) => {
                     console.log(`passed: ${line}`);

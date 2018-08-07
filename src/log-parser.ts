@@ -1,7 +1,7 @@
 import {IStorage} from "./i-storage";
 import * as readline from "readline";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {concatMap, filter, finalize, map, mapTo, mergeMap, reduce, switchMap} from "rxjs/operators";
+import {filter, finalize, map, mapTo, mergeMap, reduce, switchMap} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {IFacttype} from "./i-facttype";
 import {IFact} from "./i-fact";
@@ -18,13 +18,12 @@ export class LogParser {
 
     /***/
     constructor(public facttypes: IFacttype[],
-                public inStream: NodeJS.ReadableStream,
                 public storages: IStorage[]) {
     }
 
     /***/
-    parse(): Observable<any> {
-        return this.getLineReader()
+    parse(stream: NodeJS.ReadableStream): Observable<any> {
+        return this.getLineReader(stream)
             .pipe(
                 mergeMap((line) => {
                     return from(this.facttypes)
@@ -128,10 +127,10 @@ export class LogParser {
     }
 
     /***/
-    getLineReader(): Observable<string> {
+    getLineReader(stream: NodeJS.ReadableStream): Observable<string> {
         let bs = new BehaviorSubject(null);
         let lineReader = readline.createInterface({
-            input: this.inStream
+            input: stream
         });
         lineReader.on('line', (input: any) => {
             bs.next(input);
