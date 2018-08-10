@@ -8,6 +8,7 @@ import {Readable} from "stream";
 import {suite, test, timeout} from "mocha-typescript";
 import {IFact} from "../i-fact";
 import {IFactattrib} from "../i-factattrib";
+import {TimeoutArray} from "../timeout-array";
 
 @suite(timeout(2000))
 class UnitTest extends LogParser {
@@ -95,7 +96,7 @@ class UnitTest extends LogParser {
         let stream = new Readable();
         stream.push(testData);
         stream.push(null);
-        let logParser = new LogParser(facttypes, [new ConsoleStorage()]);
+        let logParser = new LogParser(facttypes, [new ConsoleStorage()], 600);
 
         logParser.parse(stream)
             .subscribe(
@@ -110,5 +111,62 @@ class UnitTest extends LogParser {
                     done();
                 }
             );
+    }
+}
+
+
+@suite(timeout(2000))
+class TimeoutArrayTest {
+    @test 'TimeoutArray'(done) {
+        const timeoutArray = new TimeoutArray<number>(200);
+        timeoutArray.push(1);
+        timeoutArray.push(2);
+
+        const timeOutElements = [];
+
+        timeoutArray.timeOutElement
+            .subscribe((num) => {
+                timeOutElements.push(num);
+                if (timeOutElements.length === 1) {
+                    assert.equal(timeOutElements[0], 2, 'timeOutElements 1 элемент 1');
+                } else if (timeOutElements.length === 2) {
+                    assert.equal(timeOutElements[0], 2, 'timeOutElements 2 элемент 1');
+                    assert.equal(timeOutElements[1], 3, 'timeOutElements 2 элемент 2');
+                } else {
+                    throw new Error('timeOutElements error');
+                }
+            });
+
+        setTimeout(() => {
+            // todo
+            //assert.to.be.equalTo([1, 2]);
+            assert.equal(timeoutArray.length, 2, 'st 1 длина массива');
+            assert.equal(timeoutArray[0], 1, 'st 1 элемент 1');
+            assert.equal(timeoutArray[1], 2, 'st 1 элемент 2');
+            timeoutArray.push(3);
+            timeoutArray.splice(timeoutArray.indexOf(1), 1);
+        }, 20);
+
+        setTimeout(() => {
+            assert.equal(timeoutArray.length, 2, 'st 2 длина массива');
+            assert.equal(timeoutArray[0], 2, 'st 2 элемент 1');
+            assert.equal(timeoutArray[1], 3, 'st 2 элемент 2');
+        }, 190);
+
+        setTimeout(() => {
+            assert.equal(timeoutArray.length, 1, 'st 3 длина массива');
+            assert.equal(timeoutArray[0], 3, 'st 3 элемент 1');
+        }, 210);
+
+        setTimeout(() => {
+            assert.equal(timeoutArray.length, 0, 'st 4 длина массива');
+        }, 230);
+
+        setTimeout(() => {
+            assert.equal(timeOutElements.length, 2, 'st 5 длина массива');
+            assert.equal(timeOutElements[0], 2, 'st 5 элемент 1');
+            assert.equal(timeOutElements[1], 3, 'st 5 элемент 2');
+            done();
+        }, 240);
     }
 }
