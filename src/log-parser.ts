@@ -9,16 +9,22 @@ import {IFactattribtype} from "./i-factattribtype";
 import {forkJoin} from "rxjs/observable/forkJoin";
 import {of} from "rxjs/observable/of";
 import {from} from "rxjs/observable/from";
+import {TimeoutArray} from "./timeout-array";
 
 /***/
 export class LogParser {
 
     /***/
-    activeFacts: IFact[] = [];
+    activeFacts: TimeoutArray<IFact> = new TimeoutArray<IFact>(this.factTimeOut);
 
     /***/
     constructor(public facttypes: IFacttype[],
-                public storages: IStorage[]) {
+                public storages: IStorage[],
+                public factTimeOut: number) {
+        this.activeFacts.timeOutElement
+            .subscribe((fact: IFact) => {
+                this.saveFactInStoreges(fact);
+            });
     }
 
     /***/
