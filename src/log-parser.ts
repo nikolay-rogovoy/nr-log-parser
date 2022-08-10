@@ -1,15 +1,15 @@
-import {IStorage} from "./i-storage";
+import { IStorage } from "./i-storage";
 import * as readline from "readline";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {filter, finalize, map, mapTo, mergeMap, reduce, switchMap} from "rxjs/operators";
-import {Observable} from "rxjs/Observable";
-import {IFacttype} from "./i-facttype";
-import {IFact} from "./i-fact";
-import {IFactattribtype} from "./i-factattribtype";
-import {forkJoin} from "rxjs/observable/forkJoin";
-import {of} from "rxjs/observable/of";
-import {from} from "rxjs/observable/from";
-import {TimeoutArray} from "./timeout-array";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { filter, finalize, map, mapTo, mergeMap, reduce, switchMap } from "rxjs/operators";
+import { Observable } from "rxjs/Observable";
+import { IFacttype } from "./i-facttype";
+import { IFact } from "./i-fact";
+import { IFactattribtype } from "./i-factattribtype";
+import { forkJoin } from "rxjs/observable/forkJoin";
+import { of } from "rxjs/observable/of";
+import { from } from "rxjs/observable/from";
+import { TimeoutArray } from "./timeout-array";
 
 /***/
 export class LogParser {
@@ -19,8 +19,8 @@ export class LogParser {
 
     /***/
     constructor(public facttypes: IFacttype[],
-                public storages: IStorage[],
-                public factTimeOut: number) {
+        public storages: IStorage[],
+        public factTimeOut: number) {
         this.activeFacts.timeOutElement
             .subscribe((fact: IFact) => {
                 this.saveFactInStoreges(fact);
@@ -44,7 +44,7 @@ export class LogParser {
                                     acc.push(val);
                                 }
                                 return acc;
-                            }, []),
+                            }, <IFacttype[]>[]),
                             mapTo(line),
                         );
                 }),
@@ -81,7 +81,7 @@ export class LogParser {
                         acc.push(val);
                     }
                     return acc;
-                }, [])
+                }, <IFact[]>[])
             );
     }
 
